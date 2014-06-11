@@ -1,5 +1,6 @@
 {
 
-
+        "mysql" : { "server_root_password" : "ilikerandompasswords" },
+	"phpapp": { "db_password" : "212b09752d173876a84d374333ae1ffe" }, 
 	"run_list": [ "recipe[apt]", "recipe[phpapp]" ]
 }

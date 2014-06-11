@@ -10,4 +10,5 @@ depends "apache2"
 depends "mysql"
 depends "php"
 depends "database"
+#depends "phpmyadmin"
 
