@@ -15,7 +15,7 @@ include_recipe "php::module_mysql"
 include_recipe "apache2::mod_php5"
 #include_recipe "mysql::ruby"
 include_recipe "database::mysql"
-include_recipe "phpmyadmin"
+#include_recipe "phpmyadmin"
 
 apache_site "default" do
   enable true
@@ -57,27 +57,33 @@ execute "untar-wordpress" do
 end
 
 
-#wp_secrets = Chef::Config[:file_cache_path] + '/wp-secrets.php'
+wp_secrets = Chef::Config[:file_cache_path] + '/wp-secrets.php'
 
-#if file.exist?(wp_secrets)
-#  salt_data = file_read(wp_secrets)
+if File.exist?(wp_secrets)
+  salt_data = File.read(wp_secrets)
 
-#else
-#  require 'open-uri'
-#  salt_data = open('https://api.wordpress.org/secret-key/1.1/salt/').read
-#  open(wp_secrets, 'wb') do |file|
-#   file << salt_data
-#  end
-#end
+else
+  require 'open-uri'
+  salt_data = open('https://api.wordpress.org/secret-key/1.1/salt/').read
+  open(wp_secrets, 'wb') do |file|
+   file << salt_data
+  end
+end
 
-#template node['phpapp']['path'] + '/wp-config.php' do
-# source 'wp-config.php.erb'
-# mode 0755
-# owner 'root'
-# group 'root'
-# variables(
-#   :database      => node['phpapp']['database'],
-#   :user          => node['phpapp']['db_username'],
-#   :password      => node['phpapp']['db_password'],
-#   :wp_secerts    => salt_data)
+template node['phpapp']['path'] + '/wp-config.php' do
+ source 'wp-config.php.erb'
+ mode 0755
+ owner 'root'
+ group 'root'
+ variables(
+   :database      => node['phpapp']['database'],
+   :user          => node['phpapp']['db_username'],
+   :password      => node['phpapp']['db_password'],
+   :wp_secerts    => salt_data)
+end
+
+#web_app 'phpapp' do
+# template 'site.conf.erb'
+# docroot node['phpapp']['path']
+# server_name node['phpapp']['server_name']
 #end
